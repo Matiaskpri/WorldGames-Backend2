@@ -5,7 +5,7 @@ const db = require('../db/db');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-      const pathImage = path.join(__dirname,  'games');
+      const pathImage = path.join(__dirname, 'games');
       console.log('Ruta de destino:', pathImage);
       cb(null, pathImage);
     },
@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
   });
   
   const upload = multer({ storage: storage }).single('image');
-// Obtener todos los juegos
+
 const getAllGames = (req, res) => {
   const sql = 'SELECT * FROM games';
   db.query(sql, (err, results) => {
@@ -25,7 +25,7 @@ const getAllGames = (req, res) => {
   });
 };
 
-// Obtener un juego por ID
+
 const getGameId = (req, res) => {
   const { id } = req.params;
   const sql = 'SELECT * FROM games WHERE id = ?';
@@ -35,7 +35,7 @@ const getGameId = (req, res) => {
   });
 };
 
-// Crear un juego con imagen
+
 const createGame = (req, res) => {
     upload(req, res, (err) => {
       if (err) {
@@ -51,16 +51,15 @@ const createGame = (req, res) => {
         return res.status(400).json({ error: 'No se subió ninguna imagen' });
       }
   
-      // Insertar datos del juego en la base de datos
       const sql = 'INSERT INTO games (titulo, consola, genero, href, image) VALUES (?, ?, ?, ?, ?)';
       const values = [titulo, consola, genero, href, imagePath];
   
       db.query(sql, values, (err, result) => {
         if (err) {
           console.error('Error al insertar el juego:', err);
-          // Si hay un error, intenta eliminar la imagen subida
+        
           if (imagePath) {
-            fs.unlinkSync(imagePath); // Eliminar la imagen del sistema de archivos
+            fs.unlinkSync(imagePath);
           }
           return res.status(500).json({ error: 'Error al insertar el juego en la base de datos' });
         }
@@ -70,7 +69,7 @@ const createGame = (req, res) => {
   };
   
 
-// Actualizar un juego
+
 const updateGame = (req, res) => {
   const { id } = req.params;
   const { titulo, consola, genero } = req.body;
@@ -81,7 +80,7 @@ const updateGame = (req, res) => {
   });
 };
 
-// Borrar un juego
+
 const deleteGame = (req, res) => {
   const { id } = req.params;
   const sql = 'DELETE FROM games WHERE id = ?';
